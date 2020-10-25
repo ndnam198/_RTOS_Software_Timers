@@ -1,0 +1,2 @@
+myLib.c:4:6:vUARTSend	8	static
+myLib.c:32:10:ucRandomNumber	16	static
