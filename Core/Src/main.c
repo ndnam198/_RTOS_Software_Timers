@@ -38,8 +38,8 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define ONESHOT_TIMER_3 (pdMS_TO_TICKS(3333))
-#define PERIOD_TIMER_1 (pdMS_TO_TICKS(500))
-#define PERIOD_TIMER_2 (pdMS_TO_TICKS(50))
+#define TIMER_1_FREQ (pdMS_TO_TICKS(50))
+#define TIMER_2_FREQ (pdMS_TO_TICKS(333))
 
 /* USER CODE END PD */
 
@@ -53,15 +53,23 @@ UART_HandleTypeDef huart2;
 
 /* Definitions for blinkLed1 */
 osThreadId_t blinkLed1Handle;
-const osThreadAttr_t blinkLed1_attributes = {.name = "blinkLed1", .priority = (osPriority_t)osPriorityLow4, .stack_size = 64 * 4};
+const osThreadAttr_t blinkLed1_attributes =
+    {
+        .name = "blinkLed1",
+        .priority = (osPriority_t)osPriorityLow4,
+        .stack_size = 64 * 4};
 /* Definitions for software timers */
+
 TimerHandle_t PeriodicTimer1Handle;
 TimerHandle_t PeriodicTimer2Handle;
 TimerHandle_t OneShotTimer3Handle;
 
 /* USER CODE BEGIN PV */
 uint32_t error_count = 0;
-char main_string[100];
+static char main_string[10];
+const uint32_t TIMER_1_ID = 1;
+const uint32_t TIMER_2_ID = 2;
+const uint32_t TIMER_3_ID = 3;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -129,12 +137,15 @@ int main(void)
 
   /* Create the timer(s) */
   /* creation of PeriodicTimer1 */
-  PeriodicTimer1Handle = xTimerCreate("PeriodicTimer1", PERIOD_TIMER_1,
+  PeriodicTimer1Handle = xTimerCreate("PeriodicTimer1", TIMER_1_FREQ,
                                       pdTRUE, 0, timer1Callback);
-  PeriodicTimer2Handle = xTimerCreate("PeriodicTimer2", PERIOD_TIMER_2,
+  PeriodicTimer2Handle = xTimerCreate("PeriodicTimer2", TIMER_2_FREQ,
                                       pdTRUE, 0, timer2Callback);
   OneShotTimer3Handle = xTimerCreate("OneShotTimer3", ONESHOT_TIMER_3,
                                      pdFALSE, 0, timer3Callback);
+  vTimerSetTimerID(PeriodicTimer1Handle, (void *)TIMER_1_ID);
+  vTimerSetTimerID(PeriodicTimer2Handle, (void *)TIMER_2_ID);
+  vTimerSetTimerID(OneShotTimer3Handle, (void *)TIMER_3_ID);
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   if ((PeriodicTimer1Handle == NULL) || (PeriodicTimer2Handle == NULL) || (OneShotTimer3Handle == NULL))
@@ -302,7 +313,7 @@ void blinkTask(void *argument)
   /* Infinite loop */
   for (;;)
   {
-    toggleLed4;
+    toggleLed1;
     osDelay(1000);
   }
   /* USER CODE END blinkTask */
@@ -312,71 +323,55 @@ void blinkTask(void *argument)
 void timer1Callback(void *argument)
 {
   TickType_t tick_now;
+  static uint32_t timer1_freq = TIMER_1_FREQ;
   /* Obtain current tick count */
-  newline;
   tick_now = xTaskGetTickCount();
-  memset(main_string, 0, sizeof(main_string));
-  sprintf(main_string,
-          "SW_Periodic_Timer_1 executes every %lums - tick_count = %lu\r\n",
-          PERIOD_TIMER_1, tick_now);
-  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
-  //  PRINTF(main_string);
-  // PRINT_IN_SWTIMER((void *)TIMER_1_ID, main_string);
+
+  toggleLed4;
+  newline;
+  PRINTF("Timer1 executes every ");
+  PRINT_VAR(timer1_freq);
+  PRINT_VAR(tick_now);
 }
 
 /* timer2Callback function */
 void timer2Callback(void *argument)
 {
   TickType_t tick_now;
-  uint32_t timer2_freq = PERIOD_TIMER_2;
+  static uint32_t timer2_freq = TIMER_2_FREQ;
   /* Count number of time Timer2 has expired */
-  uint32_t timer2_expired_count = 0;
+  static uint32_t timer2_expired_count = 0;
 
-  newline;
-  ++timer2_expired_count;
-  /* Obtain current tick count */
   tick_now = xTaskGetTickCount();
 
-  /* Reset GeneralString to NULL */
-  memset(main_string, 0, sizeof(main_string));
-  sprintf(main_string,
-          "\r\nSW_Periodic_Timer_2 has fre = %lums - tick_count = %lu\r\n",
-          timer2_freq, tick_now);
-  // PRINT_IN_SWTIMER((void *)TIMER_2_ID, main_string);
-  // PRINTF(main_string);
-  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
+  toggleLed2;
+  newline;
+  PRINTF("Timer2 execute every ");
+  PRINT_VAR(timer2_freq);
+  PRINT_VAR(tick_now);
 
-  toggleLed1;
+  ++timer2_expired_count;
   /* Modify timer 2 period every 5 times expires */
   if (timer2_expired_count % 5 == 0)
   {
+    PRINTF("Change timer 2 freq & Reset Timer 3\r\n");
     timer2_freq += 50;
     /* Modify timer 2 period */
     xTimerChangePeriod(PeriodicTimer2Handle, timer2_freq, 0);
-
+    xTimerReset(OneShotTimer3Handle, 0);
     /* Print debug value */
-    memset(main_string, 0, sizeof(main_string));
-    sprintf(main_string,
-            "Timer 2 period modified - timer_2_expired_count = %lu\r\n",
-            timer2_expired_count);
-    // PRINT_IN_SWTIMER((void *)TIMER_2_ID, main_string);
-    // PRINTF(main_string);
-    vUARTSend(DEBUG_USART, (uint8_t *)main_string);
   }
 }
 /* timer3Callback function */
 void timer3Callback(void *argument)
 {
   TickType_t tick_now;
+  tick_now = xTaskGetTickCount(); /* Get current tick count */
+
+  toggleLed3;
   newline;
-  tick_now = xTaskGetTickCount();
-  memset(main_string, 0, sizeof(main_string));
-  sprintf(main_string,
-          "SW_OneShot_Timer_3 executes once at 3333ms - tick_count = %lu\r\n",
-          tick_now);
-  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
-  // PRINTF(main_string);
-  // PRINT_IN_SWTIMER((void *)TIMER_3_ID, main_string);
+  PRINTF("Timer3 execute after first 3333ms\r\n");
+  PRINT_VAR(tick_now);
 }
 
 /**
