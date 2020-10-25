@@ -2,7 +2,7 @@
 FREERTOS.FootprintOK=true
 FREERTOS.IPParameters=Tasks01,FootprintOK,Timers01,configTOTAL_HEAP_SIZE,configMINIMAL_STACK_SIZE
 FREERTOS.Tasks01=defaultTask,24,64,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL;blinkLed2,8,64,StartTask02,Default,NULL,Dynamic,NULL,NULL;bilnkLed1,8,64,StartTask01,Default,NULL,Dynamic,NULL,NULL;UART2,8,128,StartTask03,Default,NULL,Dynamic,NULL,NULL
-FREERTOS.Timers01=PeriodicTimer1,PeriodicTimer1Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL;PeriodicTimer2,PeriodicTimer2Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL;OneShotTimer3,OneShotTimer3Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL
+FREERTOS.Timers01=PeriodicTimer1,timer1Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL;PeriodicTimer2,timer2Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL;OneShotTimer3,timer3Callback,osTimerPeriodic,Default,NULL,Dynamic,NULL
 FREERTOS.configMINIMAL_STACK_SIZE=64
 FREERTOS.configTOTAL_HEAP_SIZE=4096
 File.Version=6

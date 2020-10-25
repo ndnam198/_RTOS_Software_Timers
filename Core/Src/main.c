@@ -70,9 +70,9 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 
 void blinkTask(void *argument);
-void PeriodicTimer1Callback(void *argument);
-void PeriodicTimer2Callback(void *argument);
-void OneShotTimer3Callback(void *argument);
+void timer1Callback(void *argument);
+void timer2Callback(void *argument);
+void timer3Callback(void *argument);
 
 /* USER CODE BEGIN PFP */
 
@@ -130,11 +130,11 @@ int main(void)
   /* Create the timer(s) */
   /* creation of PeriodicTimer1 */
   PeriodicTimer1Handle = xTimerCreate("PeriodicTimer1", PERIOD_TIMER_1,
-                                      pdTRUE, 0, PeriodicTimer1Callback);
+                                      pdTRUE, 0, timer1Callback);
   PeriodicTimer2Handle = xTimerCreate("PeriodicTimer2", PERIOD_TIMER_2,
-                                      pdTRUE, 0, PeriodicTimer2Callback);
+                                      pdTRUE, 0, timer2Callback);
   OneShotTimer3Handle = xTimerCreate("OneShotTimer3", ONESHOT_TIMER_3,
-                                     pdFALSE, 0, OneShotTimer3Callback);
+                                     pdFALSE, 0, timer3Callback);
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   if ((PeriodicTimer1Handle == NULL) || (PeriodicTimer2Handle == NULL) || (OneShotTimer3Handle == NULL))
@@ -162,6 +162,7 @@ int main(void)
 
   if (error_count == 0)
   {
+    PRINT_VAR(error_count);
     PRINTF("Start RTOS_Kernel\r\n");
     osKernelStart();
   }
@@ -307,8 +308,8 @@ void blinkTask(void *argument)
   /* USER CODE END blinkTask */
 }
 
-/* PeriodicTimer1Callback function */
-void PeriodicTimer1Callback(void *argument)
+/* timer1Callback function */
+void timer1Callback(void *argument)
 {
   TickType_t tick_now;
   /* Obtain current tick count */
@@ -318,12 +319,13 @@ void PeriodicTimer1Callback(void *argument)
   sprintf(main_string,
           "SW_Periodic_Timer_1 executes every %lums - tick_count = %lu\r\n",
           PERIOD_TIMER_1, tick_now);
-  PRINTF(main_string);
+  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
+  //  PRINTF(main_string);
   // PRINT_IN_SWTIMER((void *)TIMER_1_ID, main_string);
 }
 
-/* PeriodicTimer2Callback function */
-void PeriodicTimer2Callback(void *argument)
+/* timer2Callback function */
+void timer2Callback(void *argument)
 {
   TickType_t tick_now;
   uint32_t timer2_freq = PERIOD_TIMER_2;
@@ -341,7 +343,8 @@ void PeriodicTimer2Callback(void *argument)
           "\r\nSW_Periodic_Timer_2 has fre = %lums - tick_count = %lu\r\n",
           timer2_freq, tick_now);
   // PRINT_IN_SWTIMER((void *)TIMER_2_ID, main_string);
-  PRINTF(main_string);
+  // PRINTF(main_string);
+  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
 
   toggleLed1;
   /* Modify timer 2 period every 5 times expires */
@@ -357,11 +360,12 @@ void PeriodicTimer2Callback(void *argument)
             "Timer 2 period modified - timer_2_expired_count = %lu\r\n",
             timer2_expired_count);
     // PRINT_IN_SWTIMER((void *)TIMER_2_ID, main_string);
-    PRINTF(main_string);
+    // PRINTF(main_string);
+    vUARTSend(DEBUG_USART, (uint8_t *)main_string);
   }
 }
-/* OneShotTimer3Callback function */
-void OneShotTimer3Callback(void *argument)
+/* timer3Callback function */
+void timer3Callback(void *argument)
 {
   TickType_t tick_now;
   newline;
@@ -370,7 +374,8 @@ void OneShotTimer3Callback(void *argument)
   sprintf(main_string,
           "SW_OneShot_Timer_3 executes once at 3333ms - tick_count = %lu\r\n",
           tick_now);
-  PRINTF(main_string);
+  vUARTSend(DEBUG_USART, (uint8_t *)main_string);
+  // PRINTF(main_string);
   // PRINT_IN_SWTIMER((void *)TIMER_3_ID, main_string);
 }
 

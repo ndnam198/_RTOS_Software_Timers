@@ -29,6 +29,7 @@ extern char ucGeneralString[100];
 #define PRINT_IN_TASK(str)                                                       \
     do                                                                           \
     {                                                                            \
+        memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);                       \
         sprintf(ucGeneralString, "[%s] - %s", pcTaskGetName(NULL), (char *)str); \
         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                      \
     } while (0)
@@ -36,24 +37,27 @@ extern char ucGeneralString[100];
 #define PRINT_VAR_IN_TASK(var)                                                       \
     do                                                                               \
     {                                                                                \
+        memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);                           \
         sprintf(ucGeneralString, "[%s] - " #var " = %lu", pcTaskGetName(NULL), var); \
         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                          \
         newline;                                                                     \
     } while (0)
 
-#define PRINT_IN_SWTIMER(timer_id, str)                                                       \
-    do                                                                                        \
-    {                                                                                         \
-        sprintf(ucGeneralString, "[%s] - %s", osTimerGetName((void *)timer_id), (char *)str); \
-        vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                                   \
-    } while (0)
+// #define PRINT_IN_SWTIMER(timer_id, str)                                                       \
+//     do                                                                                        \
+//     {                                                                                         \
+//         memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);        \
+//         sprintf(ucGeneralString, "[%s] - %s", osTimerGetName((void *)timer_id), (char *)str); \
+//         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                                   \
+//     } while (0)
 
-#define PRINT_VAR_INSWTIMER(timer_id, var)                                                        \
-    do                                                                                            \
-    {                                                                                             \
-        sprintf(ucGeneralString, "[%s] - " #var " = %lu", osTimerGetName((void *)timer_id), var); \
-        vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                                       \
-        newline;                                                                                  \
-    } while (0)
+// #define PRINT_VAR_INSWTIMER(timer_id, var)                                                        \
+//     do                                                                                            \
+//     {                                                                                             \
+//         memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);        \
+//         sprintf(ucGeneralString, "[%s] - " #var " = %lu", osTimerGetName((void *)timer_id), var); \
+//         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);                                       \
+//         newline;                                                                                  \
+//     } while (0)
 
 #endif /* !__MY_RTOS_ADDONS */

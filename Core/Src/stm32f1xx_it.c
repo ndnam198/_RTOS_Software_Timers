@@ -23,6 +23,7 @@
 #include "stm32f1xx_it.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "myLib.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -90,7 +91,7 @@ void HardFault_Handler(void)
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
-	  HAL_UART_Transmit(&huart2, (uint8_t *)"[Hardfault_Handler]Program error !!!\r\n", strlen("[Hardfault_Handler]Program error !!!\r\n"), 20);
+    PRINTF("[Hardfault_Handler]Program error !!!\r\n");
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
 }

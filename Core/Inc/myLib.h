@@ -97,6 +97,7 @@ uint32_t ucRandomNumber(uint32_t min, uint32_t max);
 #define print(str)                                          \
     do                                                      \
     {                                                       \
+        memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);  \
         sprintf(ucGeneralString, "%s", (char *)str);        \
         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString); \
     } while (0)
@@ -104,6 +105,7 @@ uint32_t ucRandomNumber(uint32_t min, uint32_t max);
 #define GET_VAR_ONLY(var)                                   \
     do                                                      \
     {                                                       \
+        memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);  \
         sprintf(ucGeneralString, " %lu ", var);             \
         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString); \
     } while (0)
@@ -111,6 +113,7 @@ uint32_t ucRandomNumber(uint32_t min, uint32_t max);
 #define printVar(var)                                             \
     do                                                            \
     {                                                             \
+        memset(ucGeneralString, 0, REDUNDANT_BUFFER_SIZE);        \
         sprintf(ucGeneralString, "Value of " #var " = %lu", var); \
         vUARTSend(DEBUG_USART, (uint8_t *)ucGeneralString);       \
         print("\r\n");                                            \
